@@ -1,16 +1,12 @@
-// UserController.java
-// D. Singletary
-// 11/20/25
-// Controller for User entity, returns DTOs with task titles
-
 package edu.fscj.cen3024c.taskmanager.controllers;
 
 import edu.fscj.cen3024c.taskmanager.dto.CreateUserRequestDTO;
+import edu.fscj.cen3024c.taskmanager.dto.LoginRequestDTO;
 import edu.fscj.cen3024c.taskmanager.dto.UpdateUserRequestDTO;
 import edu.fscj.cen3024c.taskmanager.dto.UserDTO;
 import edu.fscj.cen3024c.taskmanager.services.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +16,11 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    // ===== READ endpoints return DTOs =====
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<UserDTO> getAllUsers() {
@@ -35,15 +32,16 @@ public class UserController {
         return userService.findById(id);
     }
 
-    // ===== WRITE endpoints accept DTOs and return DTOs =====
-
     @PostMapping
-    public UserDTO createUser(@Valid @RequestBody CreateUserRequestDTO request) {
+    public UserDTO createUser(
+            @Valid @RequestBody CreateUserRequestDTO request) {
         return userService.createUser(request);
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUser(@PathVariable Integer id, @Valid @RequestBody UpdateUserRequestDTO request) {
+    public UserDTO updateUser(
+            @PathVariable Integer id,
+            @Valid @RequestBody UpdateUserRequestDTO request) {
         return userService.updateUser(id, request);
     }
 
@@ -51,5 +49,16 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @Valid @RequestBody LoginRequestDTO request) {
+
+        return userService.login(request.getUsername(), request.getPassword())
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body("Invalid username or password"));
     }
 }

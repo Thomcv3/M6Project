@@ -1,15 +1,11 @@
-// User.java
-// D. Singletary
-// 9/10/25
-// User entity for task manager application
-
 package edu.fscj.cen3024c.taskmanager.entities;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users") // avoid 'user' in postgreSQL
+@Table(name = "users")
 public class User {
 
     @Id
@@ -19,30 +15,61 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
-    private String password;
+    @Column(nullable = false, length = 24)
+    private String salt;
+
+    @Column(name = "password_hash", nullable = false, length = 256)
+    private String passwordHash;
 
     @ManyToMany(mappedBy = "users")
-    private Set<Task> tasks;
+    private Set<Task> tasks = new HashSet<>();
 
-    // Constructors
-    public User() {}
-
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public User() {
     }
 
-    // Getters & setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public User(String username, String salt, String passwordHash) {
+        this.username = username;
+        this.salt = salt;
+        this.passwordHash = passwordHash;
+    }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public Integer getId() {
+        return id;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public Set<Task> getTasks() { return tasks; }
-    public void setTasks(Set<Task> tasks) { this.tasks = tasks; }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public Set<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
+    }
 }

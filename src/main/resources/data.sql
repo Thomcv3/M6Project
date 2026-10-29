@@ -6,11 +6,14 @@ INSERT INTO priorities (level) VALUES ('MEDIUM') ON CONFLICT DO NOTHING;
 INSERT INTO priorities (level) VALUES ('HIGH') ON CONFLICT DO NOTHING;
 
 -- Users
-INSERT INTO users (username, password) VALUES ('alice', 'pass123');
-INSERT INTO users (username, password) VALUES ('bob', 'pass123');
-INSERT INTO users (username, password) VALUES ('carol', 'pass123');
-INSERT INTO users (username, password) VALUES ('dave', 'pass123');
-INSERT INTO users (username, password) VALUES ('eve', 'pass123');
+-- Users (salt + hash placeholders)
+INSERT INTO users (username, salt, password_hash) VALUES
+('alice', 'AAAAAAAAAAAAAAAAAAAAAA==', 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB='),
+('bob',   'AAAAAAAAAAAAAAAAAAAAAA==', 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB='),
+('carol', 'AAAAAAAAAAAAAAAAAAAAAA==', 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB='),
+('dave',  'AAAAAAAAAAAAAAAAAAAAAA==', 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB='),
+('eve',   'AAAAAAAAAAAAAAAAAAAAAA==', 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=')
+ON CONFLICT (username) DO NOTHING;
 
 -- Tasks (round-robin priorities)
 INSERT INTO tasks (title, description, status, due_date, priority_id)
@@ -55,4 +58,5 @@ INSERT INTO user_tasks (user_id, task_id) VALUES
 (2, 7), (3, 7),
 (3, 8), (4, 8),
 (4, 9), (5, 9),
-(5, 10), (1, 10);
+(5, 10), (1, 10)
+ON CONFLICT DO NOTHING;
